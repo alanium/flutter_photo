@@ -417,12 +417,12 @@ class _CameraScreenState extends State<CameraScreen> {
       body: Column(
         children: [
           Container(
-            height: 100,
             color: Colors.black,
           ),
 
+          //camera preview
           AnimatedOpacity(
-            opacity: isTakingPhoto ? 0.0 : 1.0, // Cambiar opacidad cuando se está tomando una foto
+            opacity: isTakingPhoto ? 0.0 : 1.0,
             duration: Duration(milliseconds: 100),
             child: FutureBuilder<void>(
               future: _initializeControllerFuture,
