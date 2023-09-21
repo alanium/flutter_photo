@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Home',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primarySwatch: Colors.blue,
       ),
       home: loggedIn ? MyHomePage() : LoginScreen(),
     );
@@ -249,9 +249,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+
             SizedBox(height: 15.0),
             Container(
-              width: 250,
+              width: 150,
               child: ElevatedButton(
                 onPressed: _pickImage,
                 child: Text('Gallery'),
@@ -260,55 +261,71 @@ class _MyHomePageState extends State<MyHomePage> {
 
             SizedBox(height: 15.0),
             Container(
-              width: 250,
+              width: 150,
               child: ElevatedButton(
                 onPressed: _openCamera,
                 child: Text('Camera'),
               ),
             ),
 
-            SizedBox(height: 16.0),
-            if (_imageFiles.isNotEmpty)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(_imageFiles.length, (index) {
-                    return Stack(
-                      children: [
-                        Image.file(
-                          _imageFiles[index],
-                          width: 170,
-                          height: 170,
-                        ),
-                        Positioned(
-                          top: 60,
-                          right: 60,
-                          child: GestureDetector(
-                            onTap: () => _removeImage(index),
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
+              SizedBox(height: 15.0),
+              Container(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.grey.shade300,
+                child: _imageFiles.isEmpty
+                    ? Container()
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(_imageFiles.length, (index) {
+                            
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+                              child: Stack(
+                                children: [
+                                  Image.file(
+                                    _imageFiles[index],
+                                    height: 180,
+                                  ),
+                                  
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    left: 0,
+                                    bottom: 0,
+                                    child: Center(
+                                      child: GestureDetector(
+                                        onTap: () => _removeImage(index),
+                                        child: Container(
+                                          height: 40,
+                                          width: 40,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.black26,
+                                          ),
+                                          child: Icon(
+                                            Icons.close,
+                                            size: 30,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                ],
                               ),
-                              child: Icon(
-                                Icons.close,
-                                size: 40,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
+                            );
+
+                          }),
                         ),
-                      ],
-                    );
-                  }),
-                ),
+                      ),
               ),
               
-            SizedBox(height: 16.0),
+            SizedBox(height: 15.0),
             Container(
-              width: 250,
+              width: 150,
               child: ElevatedButton(
                 onPressed: _sending ? null : _sendMessage,
                 child: Text('Send'),
@@ -332,6 +349,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 },
               ),
+
           ],
         ),
       ),
@@ -362,7 +380,7 @@ class _CameraScreenState extends State<CameraScreen> {
   initializeCamera(int cameraIndex) async {
     _controller = CameraController(
       widget.cameras[cameraIndex],
-      ResolutionPreset.max, // Cambia esto a ResolutionPreset.max
+      ResolutionPreset.max,
     );
 
     _initializeControllerFuture = _controller.initialize();
@@ -374,7 +392,7 @@ class _CameraScreenState extends State<CameraScreen> {
     await _controller.dispose();
     setState(() {
       selectedCamera = newCameraIndex;
-      showPreview = true; // Mostrar la vista previa de nuevo
+      showPreview = true;
     });
     initializeCamera(selectedCamera);
   }
@@ -408,95 +426,93 @@ class _CameraScreenState extends State<CameraScreen> {
     _controller.dispose();
     super.dispose();
   }
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
+      body: Stack(
         children: [
-          Container(
-            color: Colors.black,
-          ),
-
-          //camera preview
-          AnimatedOpacity(
-            opacity: isTakingPhoto ? 0.0 : 1.0,
-            duration: Duration(milliseconds: 100),
-            child: FutureBuilder<void>(
-              future: _initializeControllerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return CameraPreview(_controller);
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
+          Center(
+            child: AnimatedOpacity(
+              opacity: isTakingPhoto ? 0.0 : 1.0,
+              duration: Duration(milliseconds: 100),
+              child: FutureBuilder<void>(
+                future: _initializeControllerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return CameraPreview(_controller);
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
             ),
           ),
-
-          Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    Navigator.pop(context, widget.capturedImages);
-                  },
-                  child: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Icon(
-                      Icons.home,
-                      size: 40,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-
-                GestureDetector(
-                  onTap: () {
-                    if (showPreview) {
-                      takePhoto();
-                    }
-                  },
-                  child: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              height: 120,
+              color: Colors.black,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      Navigator.pop(context, widget.capturedImages);
+                    },
+                    child: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: Icon(
+                        Icons.home,
+                        size: 40,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
-                ),
-
-                GestureDetector(
-                  onTap: toggleCamera,
-                  child: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Icon(
-                      Icons.cameraswitch,
-                      size: 40,
-                      color: Colors.black,
+                  GestureDetector(
+                    onTap: () {
+                      if (showPreview) {
+                        takePhoto();
+                      }
+                    },
+                    child: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  GestureDetector(
+                    onTap: toggleCamera,
+                    child: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: Icon(
+                        Icons.cameraswitch,
+                        size: 40,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          Spacer(),
         ],
       ),
     );
