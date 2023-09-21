@@ -362,7 +362,7 @@ class _CameraScreenState extends State<CameraScreen> {
   initializeCamera(int cameraIndex) async {
     _controller = CameraController(
       widget.cameras[cameraIndex],
-      ResolutionPreset.medium,
+      ResolutionPreset.max, // Cambia esto a ResolutionPreset.max
     );
 
     _initializeControllerFuture = _controller.initialize();
