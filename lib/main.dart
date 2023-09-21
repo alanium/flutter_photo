@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final controller = CameraController(
       firstCamera,
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
     );
 
     await controller.initialize();
