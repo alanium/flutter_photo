@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Home',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lightBlue,
       ),
       home: loggedIn ? MyHomePage() : LoginScreen(),
     );
@@ -244,35 +244,80 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home')),
+      backgroundColor: Color.fromARGB(255, 17, 17, 17),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
 
             SizedBox(height: 15.0),
+            if (proyectos.isNotEmpty)
+              DropdownButton<String>(
+                value: selectedProjectId,
+                items: proyectos.map((proyecto) {
+                   final bool isSelected = proyecto['id'] == selectedProjectId;
+                  return DropdownMenuItem<String>(
+                    value: proyecto['id'],
+                    child: Text(
+                      truncateString(proyecto['name'], 30),
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedProjectId = newValue;
+                  });
+                },
+              ),
+
+            SizedBox(height: 50.0),
             Container(
-              width: 150,
+              width: 300,
+              height: 45,
               child: ElevatedButton(
                 onPressed: _pickImage,
                 child: Text('Gallery'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  onPrimary: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Cambia el valor para ajustar el radio del borde
+                  ),                  
+                ),
               ),
             ),
 
-            SizedBox(height: 15.0),
+            SizedBox(height: 25.0),
             Container(
-              width: 150,
+              width: 300,
+              height: 45,
               child: ElevatedButton(
                 onPressed: _openCamera,
                 child: Text('Camera'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  onPrimary: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Cambia el valor para ajustar el radio del borde
+                  ),
+                ),
               ),
             ),
 
-              SizedBox(height: 15.0),
+              SizedBox(height: 40.0),
               Container(
                 height: 200,
                 width: MediaQuery.of(context).size.width,
-                color: Colors.grey.shade300,
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: Colors.grey, width: 0.5),
+                    bottom: BorderSide(color: Colors.grey, width: 0.5),                    
+                  ),
+                ),
                 child: _imageFiles.isEmpty
                     ? Container()
                     : SingleChildScrollView(
@@ -288,7 +333,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     _imageFiles[index],
                                     height: 180,
                                   ),
-                                  
                                   Positioned(
                                     top: 0,
                                     right: 0,
@@ -313,42 +357,50 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ),
                                   ),
-
                                 ],
                               ),
-                            );
-
+                            );                            
                           }),
                         ),
                       ),
               ),
               
-            SizedBox(height: 15.0),
+            SizedBox(height: 40.0),
             Container(
-              width: 150,
+              width: 300,
+              height: 45,
               child: ElevatedButton(
-                onPressed: _sending ? null : _sendMessage,
+                  onPressed: _sending
+                  ? null
+                  : () {
+                      if (_imageFiles.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('there is nothing to send.'), // Mensaje si la lista está vacía
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Sending...'), // Mensaje si la lista no está vacía
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        _sendMessage(); // Llama a la función _sendMessage después de mostrar el SnackBar
+                      }
+                    },
                 child: Text('Send'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  onPrimary: Colors.black,
+                  onSurface: Color.fromARGB(255, 175, 175, 175),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Cambia el valor para ajustar el radio del borde
+                  ),
+                ),
               ),
             ),
-            if (proyectos.isNotEmpty)
-              DropdownButton<String>(
-                value: selectedProjectId,
-                items: proyectos.map((proyecto) {
-                  return DropdownMenuItem<String>(
-                    value: proyecto['id'],
-                    child: Text(
-                      truncateString(proyecto['name'], 30),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedProjectId = newValue;
-                  });
-                },
-              ),
 
           ],
         ),
@@ -554,55 +606,90 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign-in')),
+      backgroundColor: Color.fromARGB(255, 17, 17, 17),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            
+            Padding(
+            padding: EdgeInsets.only(right: 190.0), // Ajusta el valor de izquierda según sea necesario
+            child: Text(
+              'Log In',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 40.0,
+              ),
+            ),
+          ),
+
+            SizedBox(height: 25.0),
+            Container(
+              width: 300,
+              height: 45,
+              child: TextField(
+                controller: _usernameController,
+                style: TextStyle(color: Colors.grey.shade500),
+                decoration: InputDecoration(
+                  labelText: ' User',
+                  labelStyle: TextStyle(color: Colors.grey.shade500),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade700),  
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade700),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 16.0),
+            Container(
+              width: 300,
+              height: 45,
+              child: TextField(
+                controller: _passwordController,
+                style: TextStyle(color: Colors.grey.shade500),
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: ' Password',
+                  labelStyle: TextStyle(color: Colors.grey.shade500),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade700), // Establece el color del borde cuando el TextField no está enfocado
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade700),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 16.0),
             if (_loginError)
               Text(
                 'Incorrect credentials. I try again.',
                 style: TextStyle(color: Colors.red),
               ),
-            SizedBox(height: 16.0),
+            
+            SizedBox(height: 25.0),
             Container(
-              width: 250,
-              height: 40,
-              child: TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  labelText: 'User',
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(5.0), // Bordes redondeados
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            Container(
-              width: 250,
-              height: 40,
-              child: TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(5.0), // Bordes redondeados
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 15.0),
-            Container(
-              width: 250,
+              width: 300,
+              height: 45,
               child: ElevatedButton(
                 onPressed: _login,
-                child: Text('Sign-In'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  onPrimary: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Cambia el valor para ajustar el radio del borde
+                  ),
+                ),
+                child: Text('Login'),
               ),
             ),
+
           ],
         ),
       ),
