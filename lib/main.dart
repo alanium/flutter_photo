@@ -612,16 +612,19 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             
+            Image.asset('assets/logo.png', width: 50, height: 50),
+            SizedBox(height: 100.0),
             Padding(
-            padding: EdgeInsets.only(right: 190.0), // Ajusta el valor de izquierda según sea necesario
-            child: Text(
-              'Log In',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 40.0,
+              padding: EdgeInsets.only(right: 190.0),
+              child: Text(
+                'Log In',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40.0,
+                ),
               ),
             ),
-          ),
+
 
             SizedBox(height: 25.0),
             Container(
