@@ -23,7 +23,7 @@ void main() async {
 Future<bool> verifyUser(String user, String password) async {
   final response = await http.get(
     Uri.parse(
-        'https://contempoconstructiontx.pythonanywhere.com/login_app/$user/$password'),
+        'https://alanium.pythonanywhere.com/login_app/$user/$password'),
   );
 
   if (response.statusCode == 200) {
@@ -162,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
           print(encodedImgUrl);
 
           String apiUrl =
-              'https://contempoconstructiontx.pythonanywhere.com/upload_photo/$loggedInUser/$selectedProjectId?url=$encodedImgUrl';
+              'https://alanium.pythonanywhere.com/upload_photo/$loggedInUser/$selectedProjectId?url=$encodedImgUrl';
 
           await _printResponse(apiUrl);
         }
@@ -192,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> obtenerListaDeProyectos() async {
     try {
       final response = await http.get(Uri.parse(
-          'https://contempoconstructiontx.pythonanywhere.com/projects'));
+          'https://alanium.pythonanywhere.com/projects'));
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
